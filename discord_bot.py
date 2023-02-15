@@ -24,4 +24,7 @@ async def on_message(message):
     if message.content.lower() == '!author':
         await message.channel.send('Eu fui criado pelo Matheus Freitas, cujo email é mat.f.santana@uol.com.br!')
 
+    if message.content.lower() == '!source':
+        await message.channel.send('Aqui está o repositório com o meu código-fonte: https://github.com/MatFreitas/NLP_Bot')
+
 client.run(os.getenv('TOKEN'))
