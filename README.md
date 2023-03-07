@@ -1,6 +1,7 @@
 # NLP_Bot
 
 `ensaio_0.md`: https://github.com/MatFreitas/NLP_Bot/blob/main/ensaio_0.md
+`ensaio_1.md`: https://github.com/MatFreitas/NLP_Bot/blob/main/ensaio_1.md
 
 ### Para rodar esse projeto localmente
 
