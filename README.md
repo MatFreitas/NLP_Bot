@@ -2,6 +2,8 @@
 
 `ensaio_0.md`: https://github.com/MatFreitas/NLP_Bot/blob/main/ensaio_0.md
 
+`ensaio_1.md`: https://github.com/MatFreitas/NLP_Bot/blob/main/ensaio_1.md
+
 ### Para rodar esse projeto localmente
 
 Primeiramente, é necessário ir até o [Discord Developer Portal](https://discord.com/developers/applications). Se não tiver uma conta discord, crie uma. Logo 

@@ -1,10 +1,10 @@
-## Como foi o plano? Qual é o público-alvo
+## Como foi o plano? Qual é o público-alvo?
 
 Para realizar essa parte da APS, consultei a [API de países REST](https://restcountries.com/), de onde tirei todas as informações. Essa API fornece uma
 ampla variedade de informações de um país, sendo que o bot fornece apenas algumas delas. Sendo assim, o bot pode ser utilizado por exemplo, por 
 professores de geografia que desejam realizar uma prova online e que o país é escolhido de maneira aleatória. Assim, a correção poderia ser automatizada
 com o uso do bot, o que seria um processo feito manualmente caso contrário. Um outro cenário seria a da automatização de operações envolvendo casas de câmbio,
-já que é possível obter informações da moeda de cada país. No entanto, existem infinitos outras aplicações para o bot.
+já que é possível obter informações da moeda de cada país. No entanto, existem infinitas outras aplicações para o bot.
 
 ## Que dificuldades foram encontradas?
 
