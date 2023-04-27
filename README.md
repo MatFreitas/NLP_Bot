@@ -6,7 +6,7 @@
 
 `ensaio_2.md`: https://github.com/MatFreitas/NLP_Bot/blob/main/ensaio_2.md
 
-`ensaio_2.md`: https://github.com/MatFreitas/NLP_Bot/blob/main/ensaio_3.md
+`ensaio_3.md`: https://github.com/MatFreitas/NLP_Bot/blob/main/ensaio_3.md
 
 ### Para rodar esse projeto localmente
 
