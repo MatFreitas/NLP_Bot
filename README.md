@@ -43,12 +43,12 @@ Depois, rode esse arquivo e o bot estará online e responderá a comandos.
 
 ### Comandos
 
-- !author: returns bot's author's name and email.
-- !source: returns repository of bot.
-- !search <words> th=<filter_value>: searches in pages for words.
-- !wn_search <words> th=<filter_value>: searches in pages for words similar to the ones inputted. <filter_value>: format has to be decimal with one decimal place. Example: '0.3', '-0.4'. Values can range from -1 to 1. This is an optional parameter.
-- !run <country> native_name: returns country's native name.
-- !run <country> currency: returns country's currency.
-- !run <country> capital: returns country's capital.
-- !run <country> flag: returns country's flag description.
+- `!author`: returns bot's author's name and email.
+- `!source`: returns repository of bot.
+- `!search <words> th=<filter_value>`: searches in pages for words.
+- `!wn_search <words> th=<filter_value>`: searches in pages for words similar to the ones inputted. <filter_value>: format has to be decimal with one decimal place. Example: '0.3', '-0.4'. Values can range from -1 to 1. This is an optional parameter.
+- `!run <country> native_name`: returns country's native name.
+- `!run <country> currency`: returns country's currency.
+- `!run <country> capital`: returns country's capital.
+- `!run <country> flag`: returns country's flag description.
 - If country name is a compound name, you can write it partially. API Info obtained at: https://restcountries.com/
