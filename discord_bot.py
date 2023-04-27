@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import joblib
 import discord
 import requests
 import stopwords
@@ -21,8 +22,9 @@ client = discord.Client(intents=intents)
 
 # Dictionary to store titles and texts of resulting scraped pages
 scrap = {}
-scrap['title'] = []
-scrap['texts'] = []
+scrap['title']     = []
+scrap['texts']     = []
+scrap['sentiment'] = []
 
 # Inverted index dicitonary
 indice = {}
@@ -39,6 +41,9 @@ vectorizer = TfidfVectorizer()
 # Control variables
 total_urls = 0
 first_url = True
+
+# classifier (Naive Bayes)
+pipeline = joblib.load('modelo_APS.joblib')
  # -------------------------------------------------------------------
 
 # -------------------------------------------------------------------
@@ -87,6 +92,7 @@ async def on_message(message):
     global first_url
     global vectorizer
     global total_urls
+    global pipeline
 
     if message.author == client.user:
         return
@@ -98,7 +104,13 @@ async def on_message(message):
         await message.channel.send('Here is the repository with my source code: https://github.com/MatFreitas/NLP_Bot')
 
     if message.content.lower() == '!help':
-        await message.channel.send("!run <country> native_name: returns country's native name.\n"\
+        await message.channel.send("!author: returns bot's author's name and email.\n"\
+                                   "!source: returns repository of bot.\n\n"\
+                                   "!search <words> th=<filter_value>: searches in pages for words.\n"\
+                                   "!wn_search <words> th=<filter_value>: searches in pages for words similar to the ones inputted.\n"\
+                                   "<filter_value>: fomrmat has to be decimal with one decimal place. Example: '0.3', '-0.4'. Values\n"\
+                                   "can range from -1 to 1. This is an optional parameter.\n\n"\
+                                   "!run <country> native_name: returns country's native name.\n"\
                                    "!run <country> currency: returns country's currency.\n"\
                                    "!run <country> capital: returns country's capital.\n"\
                                    "!run <country> flag: returns country's flag description.\n"\
@@ -166,6 +178,9 @@ async def on_message(message):
         scrap['title'].append(title_list.text)
         scrap['texts'].append(" ".join([text_list[i].text for i in range(len(text_list))]).replace("\n", " "))
 
+        # Classifying page's general sentiment
+        scrap['sentiment'].append([scrap['title'][-1], pipeline.predict_log_proba([scrap['texts'][-1]]).max()])
+
         # Updating TFIDF vectorizer
         tfidf = vectorizer.fit_transform(scrap['texts'])
 
@@ -182,18 +197,55 @@ async def on_message(message):
                 indice[word][new_doc_name] = tfidf[new_doc_idx, idx]
 
     if message.content.lower()[:7] == '!search':
-        res = query(message.content.lower()[8:], 1, indice)
+        # Checking if there is sentiment filter in search (positive)
+        if message.content.lower()[-6:-3] == 'th=':
+            sentiment_filter = float(message.content.lower()[-3:])
+            res = query(message.content.lower()[8:-7], 3, indice)
+        # Checking if there is sentiment filter in search (negative)
+        elif message.content.lower()[-7:-4] == 'th=':
+            sentiment_filter = float(message.content.lower()[-4:])
+            res = query(message.content.lower()[8:-8], 3, indice)
+        else:
+            sentiment_filter = False
+            res = query(message.content.lower()[8:], 3, indice)
 
         # Cheking if there were results to the query search
         if res != []:
-            await message.channel.send("Search result:\n"\
-                                    f"{res[0][1]}")
+            # If there was no filter
+            if sentiment_filter == False:
+                await message.channel.send("Search result:\n"\
+                                                f"{res[0][1]}")
+            else:
+                for docs in res:
+                    title_doc = docs[1]
+                    sentiment_doc = None
+                    for sentiment in scrap['sentiment']:
+                        if sentiment[0] == title_doc:
+                            sentiment_doc = sentiment[1]
+                    if sentiment_doc is not None:
+                        if sentiment_doc > sentiment_filter:    
+                            await message.channel.send("Filtered Search result:\n"\
+                                                    f"{title_doc}")
+                            # If page is adequate, no need to go on
+                            break
+                        else:
+                            await message.channel.send("Page found is too negative! Searching another option...\n")
+
         else:
             await message.channel.send("No results found!")
 
     if message.content.lower()[:10] == '!wn_search':
-        # Getting terms
-        terms =re.findall('\w+', message.content.lower()[10:])
+        # Checking if there is sentiment filter in search (positive)
+        if message.content.lower()[-6:-3] == 'th=':
+            sentiment_filter = float(message.content.lower()[-3:])
+            terms = re.findall('\w+', message.content.lower()[10:-7])
+        # Checking if there is sentiment filter in search (negative)
+        elif message.content.lower()[-7:-4] == 'th=':
+            sentiment_filter = float(message.content.lower()[-4:])
+            terms = re.findall('\w+', message.content.lower()[10:-8])
+        else:
+            sentiment_filter = False
+            terms = re.findall('\w+', message.content.lower()[10:])
 
         # Creating dic to store most similar terms to the ones searched
         relevancy = {}
@@ -222,13 +274,28 @@ async def on_message(message):
         query_string = ' '.join(similar_terms)
 
         # Searching term in database
-        res = query(query_string, 1, indice)
+        res = query(query_string, 3, indice)
 
         # Cheking if there were results to the query search
         if res != []:
-            await message.channel.send("Wordnet Search result:\n"\
-                                    f"{res[0][1]}")
-        else:
-            await message.channel.send("No results found!")
+            # If there was no filter
+            if sentiment_filter == False:
+                await message.channel.send("Wordnet Search result:\n"\
+                                                f"{res[0][1]}")
+            else:
+                for docs in res:
+                    title_doc = docs[1]
+                    sentiment_doc = None
+                    for sentiment in scrap['sentiment']:
+                        if sentiment[0] == title_doc:
+                            sentiment_doc = sentiment[1]
+                    if sentiment_doc is not None:
+                        if sentiment_doc > sentiment_filter:    
+                            await message.channel.send("Wordnet filtered Search result:\n"\
+                                                    f"{title_doc}")
+                            # If page is adequate, no need to go on
+                            break
+                        else:
+                            await message.channel.send("Page found is too negative! Searching another option...\n")
 
 client.run(os.getenv('TOKEN'))
